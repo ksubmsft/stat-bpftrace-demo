@@ -29,23 +29,23 @@ kprobe:nfs4_xdr_enc_getattr {
 }
 
 END {
+    printf("=== Top 10 callers of vfs_statfs ===\n");
+    print(@vfs_statfs_count, 10);
+    printf("\n");
+    clear(@vfs_statfs_count);
+
     printf("\n");
     printf("=== Top 10 callers of stat syscalls ===\n");
     print(@stat_syscall_count, 10);
     printf("\n");
     clear(@stat_syscall_count);
 
-    printf("=== Top 10 callers of vfs_statfs ===\n");
-    print(@vfs_statfs_count, 10);
-    printf("\n");
-    clear(@vfs_statfs_count);
-
-    printf("Top 10 callers of nfs4_getattr:\n");
+    printf("=== Top 10 callers of nfs4_getattr ===\n");
     print(@nfs4_getattr_count, 10);
     printf("\n");
     clear(@nfs4_getattr_count);
 
-    printf("Top 10 callers of nfs4_xdr_enc_getattr:\n");
+    printf("=== Top 10 callers of nfs4_xdr_enc_getattr ===\n");
     print(@nfs4_xdr_enc_getattr_count, 10);
     clear(@nfs4_xdr_enc_getattr_count);
 }
