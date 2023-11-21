@@ -1,13 +1,6 @@
 #!/usr/bin/env bpftrace
 
-
 #include <linux/fs.h>
-
-BEGIN {
-    printf("Counting:\n");
-    printf("  vfs_statfs");
-    printf("  nfs4_getattr, nfs4_xdr_enc_getattr\n");
-}
 
 tracepoint:syscalls:sys_exit_newstat,
 tracepoint:syscalls:sys_exit_newlstat,
@@ -28,24 +21,26 @@ kprobe:nfs4_xdr_enc_getattr {
     @nfs4_xdr_enc_getattr_count["nfs4_getattr", pid, comm] = count();
 }
 
-END {
-    printf("=== Top 10 callers of vfs_statfs ===\n");
+interval:s:10 {
+    printf("=== Top 10 callers at timestamp %d msecs ===\n", (nsecs/1000000));
+
+    printf("+ vfs_statfs_count\n");
     print(@vfs_statfs_count, 10);
     printf("\n");
     clear(@vfs_statfs_count);
 
-    printf("\n");
-    printf("=== Top 10 callers of stat syscalls ===\n");
+    printf("+ stat syscalls\n");
     print(@stat_syscall_count, 10);
     printf("\n");
     clear(@stat_syscall_count);
 
-    printf("=== Top 10 callers of nfs4_getattr ===\n");
+    printf("+ nfs4_getattr\n");
     print(@nfs4_getattr_count, 10);
     printf("\n");
     clear(@nfs4_getattr_count);
 
-    printf("=== Top 10 callers of nfs4_xdr_enc_getattr ===\n");
+    printf("+ nfs4_xdr_enc_getattr\n");
     print(@nfs4_xdr_enc_getattr_count, 10);
     clear(@nfs4_xdr_enc_getattr_count);
+    printf("--------------------------\n\n");
 }
