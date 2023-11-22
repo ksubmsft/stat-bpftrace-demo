@@ -23,6 +23,11 @@ tracepoint:nfs:nfs_revalidate_inode_enter {
     @nfs_revalidate_inode_count[comm] = count();
 }
 
+kprobe:nfs4_xdr_enc_statfs {
+    @nfs4_statfs_comm_count[comm] = count();
+    @nfs4_xdr_enc_statfs_total++;
+}
+
 kprobe:nfs4_xdr_enc_getattr {
     @nfs4_getattr_comm_count[comm] = count();
     @nfs4_xdr_enc_getattr_total++;
@@ -58,9 +63,15 @@ interval:s:10 {
     printf("\n");
     clear(@nfs_revalidate_inode_count);
 
+    printf("+ nfs4_xdr_enc_statfs\n");
+    print(@nfs4_statfs_comm_count);
+    printf("total nfs4_xdr_enc_statfs_seen: %d\n", @nfs4_xdr_enc_statfs_total);
+    clear(@nfs4_statfs_comm_count);
+    clear(@nfs4_xdr_enc_statfs_total);
+    printf("\n");
+
     printf("+ nfs4_xdr_enc_getattr\n");
     print(@nfs4_getattr_comm_count);
-    printf("\n");
     printf("total nfs4_xdr_enc_getattrs_seen: %d\n", @nfs4_xdr_enc_getattr_total);
     clear(@nfs4_getattr_comm_count);
     clear(@nfs4_xdr_enc_getattr_total);
