@@ -1,0 +1,69 @@
+#!/usr/bin/env bpftrace
+
+tracepoint:syscalls:sys_exit_newstat,
+tracepoint:syscalls:sys_exit_newlstat,
+tracepoint:syscalls:sys_exit_newfstat,
+tracepoint:syscalls:sys_exit_newfstatat {
+    @stat_syscall_count[comm] = count();
+}
+
+kprobe:vfs_statfs {
+    @vfs_statfs_count[comm] = count();
+}
+
+kprobe:vfs_getattr {
+    @vfs_getattr_count[comm] = count();
+}
+
+tracepoint:nfs:nfs_getattr_enter {
+    @nfs_getattr_count[comm] = count();
+}
+
+tracepoint:nfs:nfs_revalidate_inode_enter {
+    @nfs_revalidate_inode_count[comm] = count();
+}
+
+kprobe:nfs4_xdr_enc_getattr {
+    @nfs4_getattr_comm_count[comm] = count();
+    @nfs4_xdr_enc_getattr_total++;
+}
+
+interval:s:10 {
+    printf("=== count of stat/statfs/getattr by comm [ ");
+    time("%Y/%m/%d %T %Z");
+    printf("] ===\n");
+
+    printf("+ vfs_statfs_count\n");
+    print(@vfs_statfs_count);
+    printf("\n");
+    clear(@vfs_statfs_count);
+
+    printf("+ vfs_getattr_count\n");
+    print(@vfs_getattr_count);
+    printf("\n");
+    clear(@vfs_getattr_count);
+
+    printf("+ nfs_getattr_count\n");
+    print(@nfs_getattr_count);
+    printf("\n");
+    clear(@vfs_getattr_count);
+
+    printf("+ stat syscalls\n");
+    print(@stat_syscall_count, 10);
+    printf("\n");
+    clear(@stat_syscall_count);
+
+    printf("+ nfs_revalidate_inode\n");
+    print(@nfs_revalidate_inode_count, 10);
+    printf("\n");
+    clear(@nfs_revalidate_inode_count);
+
+    printf("+ nfs4_xdr_enc_getattr\n");
+    print(@nfs4_getattr_comm_count);
+    printf("\n");
+    printf("total nfs4_xdr_enc_getattrs_seen: %d\n", @nfs4_xdr_enc_getattr_total);
+    clear(@nfs4_getattr_comm_count);
+    clear(@nfs4_xdr_enc_getattr_total);
+
+    printf("--------------------------\n\n");
+}
