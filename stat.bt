@@ -21,6 +21,10 @@ tracepoint:nfs:nfs_getattr_enter {
     @nfs_getattr_count[pid, comm] = count();
 }
 
+tracepoint:nfs:nfs_revalidate_inode {
+    @nfs_revalidate_inode_count[pid, comm] = count();
+}
+
 tracepoint:nfs4:nfs4_getattr {
     @nfs4_getattr_count[pid, comm] = count();
 }
@@ -51,6 +55,11 @@ interval:s:10 {
     print(@nfs_getattr_count, 10);
     printf("\n");
     clear(@nfs_getattr_count);
+
+    printf("+ nfs_revalidate_inode\n");
+    print(@nfs_revalidate_inode_count, 10);
+    printf("\n");
+    clear(@nfs_revalidate_inode_count);
 
     printf("+ nfs4_getattr\n");
     print(@nfs4_getattr_count, 10);
