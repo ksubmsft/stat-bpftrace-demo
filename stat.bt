@@ -31,10 +31,12 @@ tracepoint:nfs:nfs_revalidate_inode_enter {
 
 tracepoint:nfs4:nfs4_getattr {
     @nfs4_getattr_count[pid, comm] = count();
+    @nfs4_getattr_total++;
 }
 
 kprobe:nfs4_xdr_enc_getattr {
     @nfs4_xdr_enc_getattr_count[pid, comm] = count();
+    @nfs4_xdr_enc_getattr_total++;
 }
 
 interval:s:10 {
@@ -73,10 +75,14 @@ interval:s:10 {
     printf("+ nfs4_getattr\n");
     print(@nfs4_getattr_count, 10);
     printf("\n");
+    printf("total nfs4_getattrs seen: %d\n", @nfs4_getattr_total);
     clear(@nfs4_getattr_count);
+    clear(@nfs4_getattr_total);
 
     printf("+ nfs4_xdr_enc_getattr\n");
     print(@nfs4_xdr_enc_getattr_count, 10);
+    print("total nfs4_xdr_enc_getattrs_seen: %d\n", @nfs4_xdr_enc_getattr_total);
     clear(@nfs4_xdr_enc_getattr_count);
+    clear(@nfs4_xdr_enc_getattr_total);
     printf("--------------------------\n\n");
 }
