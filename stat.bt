@@ -17,6 +17,10 @@ kprobe:vfs_getattr {
     @vfs_getattr_count[pid, comm] = count();
 }
 
+tracepoint:nfs4:nfs4_readdir {
+    @nfs4_readdir_count[pid, comm] = count();
+}
+
 tracepoint:nfs:nfs_getattr_enter {
     @nfs_getattr_count[pid, comm] = count();
 }
@@ -50,6 +54,11 @@ interval:s:10 {
     print(@stat_syscall_count, 10);
     printf("\n");
     clear(@stat_syscall_count);
+
+    printf("+ nfs4_readdir\n");
+    print(@nfs4_readdir_count, 10);
+    printf("\n");
+    clear(@nfs4_readdir_count);
 
     printf("+ nfs_getattr\n");
     print(@nfs_getattr_count, 10);
