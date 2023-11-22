@@ -81,7 +81,7 @@ interval:s:10 {
 
     printf("+ nfs4_xdr_enc_getattr\n");
     print(@nfs4_xdr_enc_getattr_count, 10);
-    print("total nfs4_xdr_enc_getattrs_seen: %d\n", @nfs4_xdr_enc_getattr_total);
+    printf("total nfs4_xdr_enc_getattrs_seen: %d\n", @nfs4_xdr_enc_getattr_total);
     clear(@nfs4_xdr_enc_getattr_count);
     clear(@nfs4_xdr_enc_getattr_total);
     printf("--------------------------\n\n");
