@@ -13,12 +13,20 @@ kprobe:vfs_statfs {
     @vfs_statfs_count[pid, comm] = count();
 }
 
+kprobe:vfs_getattr {
+    @vfs_getattr_count[pid, comm] = count();
+}
+
+tracepoint:nfs:nfs_getattr_enter {
+    @nfs_getattr_count[pid, comm] = count();
+}
+
 tracepoint:nfs4:nfs4_getattr {
-    @nfs4_getattr_count["nfs4_getattr", pid, comm] = count();
+    @nfs4_getattr_count[pid, comm] = count();
 }
 
 kprobe:nfs4_xdr_enc_getattr {
-    @nfs4_xdr_enc_getattr_count["nfs4_getattr", pid, comm] = count();
+    @nfs4_xdr_enc_getattr_count[pid, comm] = count();
 }
 
 interval:s:10 {
@@ -29,10 +37,20 @@ interval:s:10 {
     printf("\n");
     clear(@vfs_statfs_count);
 
+    printf("+ vfs_getattr_count\n");
+    print(@vfs_getattr_count, 10);
+    printf("\n");
+    clear(@vfs_getattr_count);
+
     printf("+ stat syscalls\n");
     print(@stat_syscall_count, 10);
     printf("\n");
     clear(@stat_syscall_count);
+
+    printf("+ nfs_getattr\n");
+    print(@nfs_getattr_count, 10);
+    printf("\n");
+    clear(@nfs_getattr_count);
 
     printf("+ nfs4_getattr\n");
     print(@nfs4_getattr_count, 10);
