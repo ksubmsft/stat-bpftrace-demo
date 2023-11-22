@@ -21,7 +21,7 @@ tracepoint:nfs:nfs_getattr_enter {
     @nfs_getattr_count[pid, comm] = count();
 }
 
-tracepoint:nfs:nfs_revalidate_inode {
+tracepoint:nfs:nfs_revalidate_inode_enter {
     @nfs_revalidate_inode_count[pid, comm] = count();
 }
 
