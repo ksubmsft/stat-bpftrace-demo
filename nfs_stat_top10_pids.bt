@@ -2,7 +2,9 @@
 
 BEGIN {
     @ts_begin_nsec = nsecs;
-    printf("Dumping top 10 statfs callers by pid, hit Ctrl-C to exit.\n");
+    printf("Dumping top 10 statfs callers by pid ");
+    time("%F %H:%M:%S %Z\n");
+    printf("Hit Ctrl-C to exit\n");
 }
 
 kprobe: nfs4_proc_statfs {
