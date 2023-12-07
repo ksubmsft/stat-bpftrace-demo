@@ -5,16 +5,8 @@ BEGIN {
     printf("Dumping top 10 statfs callers by name, hit Ctrl-C to exit.\n");
 }
 
-kprobe: nfs_statfs {
-    @nfs_statfs[comm] = count();
-}
-
 kprobe: nfs4_proc_statfs {
     @nfs4_proc_statfs[comm] = count();
-}
-
-kprobe: nfs_getattr {
-    @nfs_getattr[comm] = count();
 }
 
 kprobe: nfs4_proc_getattr {
@@ -29,21 +21,13 @@ END {
     printf("\n");
     printf("=== Top 10 callers (duration: %lu sec) ===\n", $duration_sec);
 
-    print(@nfs_statfs, 10);
-    printf("\n");
-
     print(@nfs4_proc_statfs, 10);
-    printf("\n");
-
-    print(@nfs_getattr, 10);
     printf("\n");
 
     print(@nfs4_proc_getattr, 10);
     printf("\n");
 
-    clear(@nfs_statfs);
     clear(@nfs4_proc_statfs);
-    clear(@nfs_getattr);
     clear(@nfs4_proc_getattr);
     clear(@ts_begin_nsec);
     clear(@ts_end_nsec);
